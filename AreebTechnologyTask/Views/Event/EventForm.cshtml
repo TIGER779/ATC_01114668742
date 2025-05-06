@@ -1,0 +1,24 @@
+﻿<!-- Event Form Page -->
+<!-- File: event-form.html -->
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Create/Edit Event</title>
+    <link rel="stylesheet" href="/css/form.css">
+</head>
+<body>
+    <div class="container mt-4">
+        <h2>Event Form</h2>
+        <form method="post" action="/Admin/Save">
+            <input type="text" name="Name" placeholder="Event Name" class="form-control mb-2" required>
+            <textarea name="Description" placeholder="Event Description" class="form-control mb-2" required></textarea>
+            <input type="text" name="Category" placeholder="Category" class="form-control mb-2" required>
+            <input type="date" name="Date" class="form-control mb-2" required>
+            <input type="text" name="Venue" placeholder="Venue" class="form-control mb-2" required>
+            <input type="text" name="Price" placeholder="Price" class="form-control mb-2" required>
+            <input type="url" name="Image" placeholder="Image URL" class="form-control mb-2">
+            <input type="submit" value="Save" class="btn btn-success">
+        </form>
+    </div>
+</body>
+</html>
