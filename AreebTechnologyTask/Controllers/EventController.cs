@@ -18,28 +18,6 @@ namespace AreebTechnologyTask.Controllers
          * 3-  PUT /{id} (admin only - update)
          * 4-  DELETE /{id} (admin only - delete)
          */
-
-<<<<<<< Updated upstream
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-=======
         // POST: api/event -- With Json Body
         [HttpPost]
         public async Task<ActionResult<Event>> AddEvent(Event NewEvent)
@@ -89,8 +67,6 @@ namespace AreebTechnologyTask.Controllers
 
             return Ok(new { message = " Event Deleted successfully" });
         }
->>>>>>> Stashed changes
-
 
         // User Side Event Controller
         /*
