@@ -113,7 +113,7 @@ namespace AreebTechnologyTask.Migrations
                     b.Property<string>("Email")
                         .IsRequired()
                         .HasMaxLength(100)
-                        .HasColumnType("nvarchar(100)");
+                        .HasColumnType("nvarchar");
 
                     b.Property<string>("HashedPassword")
                         .IsRequired()
