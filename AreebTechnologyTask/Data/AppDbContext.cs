@@ -23,7 +23,11 @@ namespace AreebTechnologyTask.Data
             var connectionString = config.GetSection("constr").Value;
 
             optionsBuilder.UseSqlServer(connectionString);
+
+            
         }
+
+        
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
@@ -39,7 +43,7 @@ namespace AreebTechnologyTask.Data
             {
                 entity.HasKey(u => u.Id);
                 entity.Property(u => u.Name).HasMaxLength(100).IsRequired();
-                entity.Property(u => u.Email).HasMaxLength(100).IsRequired();
+                entity.Property(u => u.Email).HasColumnType("nvarchar").HasMaxLength(100).IsRequired();
                 entity.Property(u => u.HashedPassword).HasMaxLength(100).IsRequired();
                 entity.Property(u => u.Role).IsRequired();
                 entity.Property(u => u.Address).HasMaxLength(100).IsRequired();

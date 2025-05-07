@@ -12,7 +12,7 @@ namespace AreebTechnologyTask.Models
         public string Address { get; set; }
         public string Phone { get; set; }
         public DateTime CreatedAt { get; set; } = DateTime.UtcNow;
-        public ICollection<Booking> Bookings { get; set; }
+        public ICollection<Booking>? Bookings { get; set; }
 
 
     }

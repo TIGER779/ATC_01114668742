@@ -12,7 +12,7 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace AreebTechnologyTask.Migrations
 {
     [DbContext(typeof(AppDbContext))]
-    [Migration("20250506000722_InitialCreate")]
+    [Migration("20250507190914_Initial Create")]
     partial class InitialCreate
     {
         /// <inheritdoc />
@@ -116,7 +116,7 @@ namespace AreebTechnologyTask.Migrations
                     b.Property<string>("Email")
                         .IsRequired()
                         .HasMaxLength(100)
-                        .HasColumnType("nvarchar(100)");
+                        .HasColumnType("nvarchar");
 
                     b.Property<string>("HashedPassword")
                         .IsRequired()
