@@ -10,6 +10,12 @@ namespace AreebTechnologyTask.Controllers
     [Route("api/[controller]")]
     public class EventController : Controller
     {
+        private readonly AppDbContext _context;
+
+        public EventController(AppDbContext context)
+        {
+            _context = context;
+        }
 
         // Admin Side Event Controller (CRUDs)
         /*
@@ -18,16 +24,18 @@ namespace AreebTechnologyTask.Controllers
          * 3-  PUT /{id} (admin only - update)
          * 4-  DELETE /{id} (admin only - delete)
          */
-        // POST: api/event -- With Json Body
-        [HttpPost]
+
+
+        // POST: api/event/AddEvent -- With Json Body
+        [HttpPost("AddEvent")]
         public async Task<ActionResult<Event>> AddEvent(Event NewEvent)
         {
             _context.Events.Add(NewEvent);
             await _context.SaveChangesAsync();
             return CreatedAtAction(nameof(GetEventByID), new { id = NewEvent.Id }, NewEvent);
         }
-        // PUT: api/event/{id} -- With Json Body
-        [HttpPut("{id}")]
+        // PUT: api/event/UpdateEvent/{id} -- With Json Body
+        [HttpPut("UpdateEvent/{id}")]
         public async Task<IActionResult> UpdateEvent(int id, Event updatedEvent)
         {
             var existingEvent = await _context.Events.FindAsync(id);
@@ -53,8 +61,8 @@ namespace AreebTechnologyTask.Controllers
             return Ok(new { message = "Event Updated successfully" });
         }
 
-        // Delete: api/event/{id} -- With Json Body
-        [HttpDelete("{id}")]
+        // Delete: api/event/DeleteEvent/{id} -- With Json Body
+        [HttpDelete("DeleteEvent/{id}")]
         public async Task<IActionResult> DeleteEvent(int id)
         {
             var EventItem = await _context.Events.FindAsync(id);
@@ -73,22 +81,17 @@ namespace AreebTechnologyTask.Controllers
          * 1-  GET / (list all events)
          * 2-  GET /{id} (get event by id)
          */
-        private readonly AppDbContext _context;
 
-        public EventController(AppDbContext context)
-        {
-            _context = context;
-        }
-        // GET: api/event
-        [HttpGet]
-        public async Task<ActionResult<IEnumerable<Event>>> GetEvents()
+        // GET: api/event/GetAllEvents
+        [HttpGet("GetAllEvents")]
+        public async Task<ActionResult<IEnumerable<Event>>> GetAllEvents()
         {
             var events = await _context.Events.ToListAsync();
             return Ok(events);
         }
 
-        // GET: api/event/{id}
-        [HttpGet("{id}")]
+        // GET: api/event/GetEventByID/{id}
+        [HttpGet("GetEventByID/{id}")]
         public async Task<ActionResult<Event>> GetEventByID(int id)
         {
             var eventItem = await _context.Events.FirstOrDefaultAsync(e => e.Id == id);

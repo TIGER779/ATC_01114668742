@@ -10,7 +10,7 @@
         public string Venue { get; set; }
         public int Price { get; set; }
         public string ImageUrl { get; set; }
-        public ICollection<Booking> Bookings { get; set; }
+        public ICollection<Booking>? Bookings { get; set; }
 
     }
 }
