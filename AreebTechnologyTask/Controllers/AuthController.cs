@@ -1,14 +1,13 @@
 ﻿using System.IdentityModel.Tokens.Jwt;
 using System.Security.Claims;
 using System.Text;
-using Microsoft.AspNetCore.Mvc;
-using Microsoft.IdentityModel.Tokens;
-using AreebTechnologyTask.Dto;
-using AreebTechnologyTask.Models;
 using AreebTechnologyTask.Data;
+using AreebTechnologyTask.Dto;
 using AreebTechnologyTask.Enums;
-using BCrypt.Net;
+using AreebTechnologyTask.Models;
+using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.IdentityModel.Tokens;
 
 
 namespace AreebTechnologyTask.Controllers
@@ -30,13 +29,12 @@ namespace AreebTechnologyTask.Controllers
         public async Task<IActionResult> Register(RegisterDto request)
         {
             // Check if user already exists
-            if (_context.Users.Any(u => u.Email == request.Email))
+            if (_context.Users.Any(u => u.Email == request.Email && u.Name == request.Name))
                 return BadRequest("User already exists.");
 
             // Hash the password
             string passwordHash = BCrypt.Net.BCrypt.HashPassword(request.Password);
 
-            // Create new user object
             var user = new User
             {
                 Name = request.Name,
@@ -44,10 +42,9 @@ namespace AreebTechnologyTask.Controllers
                 HashedPassword = passwordHash,
                 Address = request.Address,
                 Phone = request.Phone,
-                Role = UserRole.User // Default to "User" role
+                Role = UserRole.User
             };
 
-            // Add user to the database
             _context.Users.Add(user);
             await _context.SaveChangesAsync();
 
@@ -57,11 +54,7 @@ namespace AreebTechnologyTask.Controllers
         [HttpPost("login")]
         public async Task<IActionResult> Login(LoginDto request)
         {
-            Console.WriteLine($"Email from request: {request.Email} ({request.Email.GetType()})");
-            var user = await _context.Users.FirstOrDefaultAsync();
-            Console.WriteLine($"First user: {user?.Email}");
-
-            // var user = await _context.Users.FirstOrDefaultAsync(u => u.Email.Equals(request.Email));
+            var user = await _context.Users.FirstOrDefaultAsync(u => u.Email.Equals(request.Email));
 
             if (user != null)
                 Console.WriteLine($"User.Email from DB: {user.Email} ({user.Email.GetType()})");
@@ -92,7 +85,7 @@ namespace AreebTechnologyTask.Controllers
 
             var token = new JwtSecurityToken(
                 claims: claims,
-                expires: DateTime.UtcNow.AddHours(1),
+                expires: DateTime.UtcNow.AddHours(1), // token expire in 1 hour
                 signingCredentials: creds
             );
 

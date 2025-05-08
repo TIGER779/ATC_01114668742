@@ -1,10 +1,6 @@
-using System.Configuration;
 using System.Text;
 using AreebTechnologyTask.Data;
-using AreebTechnologyTask.Models;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
-using Microsoft.AspNetCore.Identity;
-using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
 
 namespace AreebTechnologyTask
@@ -50,7 +46,7 @@ namespace AreebTechnologyTask
             app.UseHttpsRedirection();
             app.UseRouting();
 
-            app.UseAuthentication(); // Ensure authentication middleware is added
+            app.UseAuthentication();
             app.UseAuthorization();
 
             app.MapStaticAssets();
