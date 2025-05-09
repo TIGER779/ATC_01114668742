@@ -9,15 +9,14 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
 
-
 namespace AreebTechnologyTask.Controllers
 {
-    [ApiController]
-    [Route("api/[controller]")]
-    public class AuthController : ControllerBase
+    public class AuthController : Controller
     {
         private readonly AppDbContext _context;
         private readonly IConfiguration _configuration;
+        private readonly TimeSpan _tokenLifetime = TimeSpan.FromMinutes(1); // JWT token lifetime
+
 
         public AuthController(AppDbContext context, IConfiguration configuration)
         {
@@ -25,10 +24,92 @@ namespace AreebTechnologyTask.Controllers
             _configuration = configuration;
         }
 
-        [HttpPost("register")]
+        // GET: /Auth/Login
+        [HttpGet]
+        public IActionResult Login()
+        {
+            return View(); // Views/Auth/Login.cshtml
+        }
+
+        // POST: /Auth/Login
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> Login(LoginDto request, string? returnUrl)
+        {
+            var user = await _context.Users.FirstOrDefaultAsync(u => u.Email == request.Email);
+
+            if (user == null || !BCrypt.Net.BCrypt.Verify(request.Password, user.HashedPassword))
+            {
+                ModelState.AddModelError("", "Invalid email or password");
+                return View(request);
+            }
+
+            string token = CreateToken(user, out DateTime expiresAt);
+
+            Response.Cookies.Append("JwtToken", token, new CookieOptions
+            {
+                HttpOnly = true,
+                Secure = true,
+                SameSite = SameSiteMode.Strict,
+                Expires = expiresAt
+            });
+
+            if (!string.IsNullOrEmpty(returnUrl) && Url.IsLocalUrl(returnUrl))
+                return Redirect(returnUrl);
+
+            return RedirectToAction("Index", "Home");
+        }
+
+
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> Logout()
+        {
+            Response.Cookies.Delete("JwtToken"); // Remove JWT cookie
+
+            HttpContext.Session.Clear();
+
+            await Task.CompletedTask; // Simulate async operation
+
+            return RedirectToAction("Index", "Home");
+        }
+
+        private string CreateToken(User user, out DateTime expiresAt)
+        {
+            var claims = new[]
+            {
+        new Claim(ClaimTypes.NameIdentifier, user.Id.ToString()),
+        new Claim(ClaimTypes.Email, user.Email)
+    };
+
+            var key = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(_configuration["Jwt:Key"]!));
+            var creds = new SigningCredentials(key, SecurityAlgorithms.HmacSha256);
+
+            expiresAt = DateTime.UtcNow.Add(_tokenLifetime);
+
+            var token = new JwtSecurityToken(
+                claims: claims,
+                expires: expiresAt,
+                signingCredentials: creds
+            );
+
+            return new JwtSecurityTokenHandler().WriteToken(token);
+        }
+
+
+
+        [HttpGet]
+        public IActionResult Register()
+        {
+            return View(); //Views/Auth/Register.cshtml
+        }
+
+        // POST: /Auth/Register
+        [HttpPost]
+        [ValidateAntiForgeryToken]
         public async Task<IActionResult> Register(RegisterDto request)
         {
-            // Check if user already exists
+            // Check if the user already exists
             if (_context.Users.Any(u => u.Email == request.Email && u.Name == request.Name))
                 return BadRequest("User already exists.");
 
@@ -48,49 +129,7 @@ namespace AreebTechnologyTask.Controllers
             _context.Users.Add(user);
             await _context.SaveChangesAsync();
 
-            return Ok(new { message = "User registered successfully." });
-        }
-
-        [HttpPost("login")]
-        public async Task<IActionResult> Login(LoginDto request)
-        {
-            var user = await _context.Users.FirstOrDefaultAsync(u => u.Email.Equals(request.Email));
-
-            if (user != null)
-                Console.WriteLine($"User.Email from DB: {user.Email} ({user.Email.GetType()})");
-
-
-            if (user == null || !BCrypt.Net.BCrypt.Verify(request.Password, user.HashedPassword))
-            {
-                return Unauthorized(new { message = "Invalid credentials." });
-            }
-
-            string token = CreateToken(user);
-            return Ok(new { token });
-        }
-
-
-        private string CreateToken(User user)
-        {
-            var claims = new[]
-            {
-                new Claim(ClaimTypes.NameIdentifier, user.Id.ToString()),
-                new Claim(ClaimTypes.Email, user.Email)
-            };
-
-            var key = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(
-                _configuration["Jwt:Key"]!));
-
-            var creds = new SigningCredentials(key, SecurityAlgorithms.HmacSha256);
-
-            var token = new JwtSecurityToken(
-                claims: claims,
-                expires: DateTime.UtcNow.AddHours(1), // token expire in 1 hour
-                signingCredentials: creds
-            );
-
-            return new JwtSecurityTokenHandler().WriteToken(token);
+            return RedirectToAction("Login");
         }
     }
 }
-

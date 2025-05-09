@@ -1,0 +1,26 @@
+﻿@model IEnumerable<Booking>
+
+<h2>My Bookings</h2>
+<table class="table">
+    <thead>
+        <tr>
+            <th>Event</th>
+            <th>Date</th>
+            <th>Venue</th>
+            <th>Price</th>
+            <th>Booked On</th>
+        </tr>
+    </thead>
+    <tbody>
+        @foreach (var booking in Model)
+        {
+            <tr>
+                <td>@booking.Event.Name</td>
+                <td>@booking.Event.Date.ToShortDateString()</td>
+                <td>@booking.Event.Venue</td>
+				<td>@booking.Event.Price.ToString("C")</td>
+                <td>@booking.BookingDate.ToShortDateString()</td>
+            </tr>
+        }
+    </tbody>
+</table>

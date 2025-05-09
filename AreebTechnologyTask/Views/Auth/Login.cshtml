@@ -1,25 +1,16 @@
 ﻿@{
-	ViewData["Title"] = "Login";
+    ViewData["Title"] = "Login";
 }
-<!-- Login Page -->
-<!-- File: login.html -->
-<!DOCTYPE html>
-<html>
-<head>
-	<title>Login</title>
-	<link rel="stylesheet" href="/css/auth.css">
-</head>
-<body>
-	<div class="container mt-5">
-		<h2>Login</h2>
-		<form method="post" action="/Auth/Login">
-			<input type="email" name="Email" placeholder="Email" class="form-control mb-2" required>
-			<input type="password" name="Password" placeholder="Password" class="form-control mb-2" required>
-			<input type="submit" value="Login" class="btn btn-primary">
-		</form>
-	</div>
-</body>
-</html>
 
-
-
+<h2>Login</h2>
+<form method="post" asp-controller="Auth" asp-action="Login">
+    <div class="form-group">
+        <label for="Email">Email</label>
+        <input type="email" name="Email" class="form-control" required placeholder="Enter your email" />
+    </div>
+    <div class="form-group">
+        <label for="Password">Password</label>
+        <input type="password" name="Password" class="form-control" required placeholder="Enter your password" />
+    </div>
+    <button type="submit" class="btn btn-primary">Login</button>
+</form>
