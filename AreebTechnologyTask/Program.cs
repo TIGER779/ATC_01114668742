@@ -11,10 +11,17 @@ namespace AreebTechnologyTask
         {
             var builder = WebApplication.CreateBuilder(args);
 
+            // Add DbContext to the container
             builder.Services.AddDbContext<AppDbContext>();
 
             // Add services to the container.
             builder.Services.AddControllersWithViews();
+
+            // Add session support
+            builder.Services.AddSession(options =>
+            {
+                options.IdleTimeout = TimeSpan.FromMinutes(30); // Set session timeout
+            });
 
             // Add authentication and JWT bearer configuration
             builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
@@ -29,10 +36,25 @@ namespace AreebTechnologyTask
                         IssuerSigningKey = new SymmetricSecurityKey(
                             Encoding.UTF8.GetBytes(builder.Configuration["Jwt:Key"]!))
                     };
-                });
 
+                        // READ JWT FROM COOKIE
+                        options.Events = new JwtBearerEvents
+                        {
+                            OnMessageReceived = context =>
+                            {
+                                var token = context.Request.Cookies["JwtToken"];
+                                if (!string.IsNullOrEmpty(token))
+                                {
+                                    context.Token = token;
+                                }
+                                return Task.CompletedTask;
+                            }
+                        };
+                    });
+
+
+            // Add authorization services
             builder.Services.AddAuthorization();
-
 
             var app = builder.Build();
 
@@ -44,11 +66,15 @@ namespace AreebTechnologyTask
             }
 
             app.UseHttpsRedirection();
+
+            app.UseSession();
+
             app.UseRouting();
 
             app.UseAuthentication();
             app.UseAuthorization();
 
+            // Map the controller routes
             app.MapStaticAssets();
             app.MapControllerRoute(
                 name: "default",

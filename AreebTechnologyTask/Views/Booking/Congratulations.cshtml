@@ -1,0 +1,10 @@
+﻿@{
+    ViewData["Title"] = "Congratulations";
+    var eventName = ViewContext.HttpContext.Request.Query["eventName"];
+}
+
+<div class="text-center mt-5">
+    <h1>🎉 Congratulations!</h1>
+    <p class="lead">You have successfully booked <strong>@eventName</strong>.</p>
+    <a class="btn btn-primary mt-3" asp-controller="Booking" asp-action="MyBookings">View My Bookings</a>
+</div>
