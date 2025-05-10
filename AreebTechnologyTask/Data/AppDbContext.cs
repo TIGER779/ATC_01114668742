@@ -45,7 +45,7 @@ namespace AreebTechnologyTask.Data
                 entity.Property(u => u.Name).HasMaxLength(100).IsRequired();
                 entity.Property(u => u.Email).HasColumnType("nvarchar").HasMaxLength(100).IsRequired();
                 entity.Property(u => u.HashedPassword).HasMaxLength(100).IsRequired();
-                entity.Property(u => u.Role).IsRequired();
+                entity.Property(u => u.Role).HasColumnType("nvarchar").HasMaxLength(10).IsRequired();
                 entity.Property(u => u.Address).HasMaxLength(100).IsRequired();
                 entity.Property(u => u.Phone).HasMaxLength(20).IsRequired();
                 entity.Property(u => u.CreatedAt).HasDefaultValueSql("GETDATE()").ValueGeneratedOnAdd();

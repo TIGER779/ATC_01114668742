@@ -1,27 +1,53 @@
 ﻿@model Event
 
+<!-- Event Details Section Begin -->
 <h2 class="mb-4 text-primary">Event Details</h2>
+<section class="spad my-5">
+	<div class="container">
+		<div class="row justify-content-center">
+			<div class="col-lg-8 mx-auto">
+				<div class="card shadow-lg rounded-4 border-0">
+					<img src="/Images/@Model.ImageUrl" alt="@Model.Name" class="card-img-top rounded-top-4" style="max-height: 500px; object-fit: cover; width: 100%;" />
+					<div class="card-body p-4">
 
-<div class="card shadow-lg p-4 mb-5 bg-white rounded" style="max-width: 700px; margin: auto;">
-    <h3 class="card-title text-center mb-3">@Model.Name</h3>
+						<h3 class="card-title text-center mb-3">@Model.Name</h3>
 
-    @if (!string.IsNullOrEmpty(Model.ImageUrl))
-    {
-        <img src="/Images/@Model.ImageUrl" alt="@Model.Name" class="img-fluid rounded mb-3" style="max-height: 400px; object-fit: cover; width: 100%;" />
-    }
+						<table class="table table-bordered text-center mb-4">
+							<tbody>
+								<tr>
+									<td class="fw-bold">Date:</td>
+									<td>@Model.Date.ToShortDateString()</td>
+								</tr>
+								<tr>
+									<td class="fw-bold">Venue:</td>
+									<td>@Model.Venue</td>
+								</tr>
+								<tr>
+									<td class="fw-bold">Category:</td>
+									<td>@Model.Category</td>
+								</tr>
+								<tr>
+									<td class="fw-bold">Price:</td>
+									<td>@Model.Price $</td>
+								</tr>
+							</tbody>
+						</table>
 
-    <p class="mb-2"><strong>Date:</strong> @Model.Date.ToShortDateString()</p>
-    <p class="mb-2"><strong>Venue:</strong> @Model.Venue</p>
-    <p class="mb-2"><strong>Description:</strong> @Model.Description</p>
-    <p class="mb-2"><strong>Category:</strong> @Model.Category</p>
-    <p class="mb-3"><strong>Price:</strong> <span class="text-success">$@Model.Price</span></p>
+						<p class="text-muted mb-4" style="font-size:20px;"><strong>Description:</strong> @Model.Description</p>
 
-    <div class="d-flex justify-content-between mt-3">
-        <a asp-action="Index" asp-controller="Home" class="btn btn-outline-primary w-45">⬅️ Back to Events</a>
-        <form asp-action="BookEvent" asp-controller="Home" method="post">
-            <input type="hidden" name="eventId" value="@Model.Id" />
-            <button type="submit" class="btn btn-success w-45">Book Now</button>
-        </form>
-    </div>
-</div>
+						<!-- Action Buttons -->
+						<div class="d-flex justify-content-between mt-4">
+							<a asp-action="Index" asp-controller="Home" class="btn btn-outline-primary w-45">⬅️ Back to Events</a>
+							<form asp-action="BookEvent" asp-controller="Home" method="post">
+								<input type="hidden" name="eventId" value="@Model.Id" />
+								<button type="submit" class="btn btn-success w-45">Book Now</button>
+							</form>
+						</div>
 
+					</div>
+				</div>
+			</div>
+		</div>
+	</div>
+</section>
+<!-- Event Details Section End -->

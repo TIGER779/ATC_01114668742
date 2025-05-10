@@ -15,7 +15,7 @@ namespace AreebTechnologyTask.Controllers
     {
         private readonly AppDbContext _context;
         private readonly IConfiguration _configuration;
-        private readonly TimeSpan _tokenLifetime = TimeSpan.FromMinutes(1); // JWT token lifetime
+        private readonly TimeSpan _tokenLifetime = TimeSpan.FromHours(1); // JWT token lifetime
 
 
         public AuthController(AppDbContext context, IConfiguration configuration)
