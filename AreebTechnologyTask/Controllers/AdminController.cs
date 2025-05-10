@@ -1,29 +1,26 @@
-﻿using System.Collections.Generic;
-using System.Security.Claims;
-using AreebTechnologyTask.Data;
+﻿using AreebTechnologyTask.Data;
 using AreebTechnologyTask.Models;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.DotNet.Scaffolding.Shared.Messaging;
 using Microsoft.EntityFrameworkCore;
 
 namespace AreebTechnologyTask.Controllers
 {
-    public class EventController : Controller
+    public class AdminController : Controller
     {
         private readonly AppDbContext _context;
 
-        public EventController(AppDbContext context)
+        public AdminController(AppDbContext context)
         {
             _context = context;
         }
 
-       // GET: /Event/AddEvent
+        // GET: /Admin/AddEvent
         public IActionResult AddEvent()
         {
-            return View(); //Views/Event/AddEvent.cshtml
+            return View(); //Views/Admin/AddEvent.cshtml
         }
 
-        // POST: /Event/AddEvent
+        // POST: /Admin/AddEvent
         [HttpPost]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> AddEvent(Event newEvent)
@@ -32,22 +29,25 @@ namespace AreebTechnologyTask.Controllers
             {
                 _context.Events.Add(newEvent);
                 await _context.SaveChangesAsync();
-                return RedirectToAction(nameof(Index));
+
+                TempData["SuccessMessage"] = "Event added successfully!";
+                return RedirectToAction(nameof(AdminPanel));
             }
             return View(newEvent);
         }
 
-        // GET: /Event/EditEvent/5
+
+        // GET: /Admin/EditEvent/5
         public async Task<IActionResult> EditEvent(int id)
         {
             var existingEvent = await _context.Events.FindAsync(id);
             if (existingEvent == null)
                 return NotFound();
 
-            return View(existingEvent); //Views/Event/EditEvent.cshtml
+            return View(existingEvent); //Views/Admin/EditEvent.cshtml
         }
 
-        // POST: /Event/EditEvent/5
+        // POST: /Admin/EditEvent/5
         [HttpPost]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> EditEvent(int id, Event updatedEvent)
@@ -71,10 +71,15 @@ namespace AreebTechnologyTask.Controllers
             existingEvent.ImageUrl = updatedEvent.ImageUrl;
 
             await _context.SaveChangesAsync();
-            return RedirectToAction(nameof(Index));
+
+            // success message
+            TempData["SuccessMessage"] = "Event updated successfully!";
+
+            return RedirectToAction(nameof(AdminPanel));
         }
 
-        // POST: /Event/DeleteEvent/5
+
+        // POST: /Admin/DeleteEvent/5
         [HttpPost]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> DeleteEvent(int id)
@@ -85,7 +90,19 @@ namespace AreebTechnologyTask.Controllers
 
             _context.Events.Remove(eventItem);
             await _context.SaveChangesAsync();
-            return RedirectToAction(nameof(Index));
+
+            // success message
+            TempData["SuccessMessage"] = "Event Deleted successfully!";
+
+            return RedirectToAction(nameof(AdminPanel));
+        }
+
+        // GET: /Admin/Index
+        [HttpGet]
+        public async Task<IActionResult> AdminPanel()
+        {
+            var events = await _context.Events.ToListAsync();
+            return View(events); // Views/Event/Index.cshtml
         }
 
 
