@@ -12,8 +12,8 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace AreebTechnologyTask.Migrations
 {
     [DbContext(typeof(AppDbContext))]
-    [Migration("20250507190914_Initial Create")]
-    partial class InitialCreate
+    [Migration("20250510122525_Create Migration")]
+    partial class CreateMigration
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -133,8 +133,10 @@ namespace AreebTechnologyTask.Migrations
                         .HasMaxLength(20)
                         .HasColumnType("nvarchar(20)");
 
-                    b.Property<int>("Role")
-                        .HasColumnType("int");
+                    b.Property<string>("Role")
+                        .IsRequired()
+                        .HasMaxLength(10)
+                        .HasColumnType("nvarchar");
 
                     b.HasKey("Id");
 
