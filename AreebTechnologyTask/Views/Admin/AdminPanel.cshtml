@@ -1,28 +1,64 @@
-﻿<!-- Admin Panel CRUD Page -->
-<!-- File: admin-panel.html -->
-<!DOCTYPE html>
-<html>
-<head>
-    <title>Admin Panel</title>
-    <link rel="stylesheet" href="/css/admin.css">
-</head>
-<body>
-    <div class="container mt-4">
-        <h2>Manage Events</h2>
-        <a href="/Admin/Create" class="btn btn-primary mb-3">Create New Event</a>
-        <table class="table table-bordered">
-            <thead>
-                <tr>
-                    <th>Name</th>
-                    <th>Date</th>
-                    <th>Venue</th>
-                    <th>Actions</th>
-                </tr>
-            </thead>
-            <tbody>
-                <!-- List events with edit/delete -->
-            </tbody>
-        </table>
-    </div>
-</body>
-</html>
+﻿@model IEnumerable<AreebTechnologyTask.Models.Event>
+
+<h2>Manage Events</h2>
+
+<!-- Success Message -->
+@if (TempData["SuccessMessage"] != null)
+{
+	<div class="alert alert-success alert-dismissible fade show" role="alert" id="successMessage">
+		@TempData["SuccessMessage"]
+		<button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+	</div>
+}
+
+<a asp-action="AddEvent" class="btn btn-primary mb-3">Create New Event</a>
+
+<table class="table table-bordered">
+	<thead>
+		<tr>
+			<th>ID</th>
+			<th>Name</th>
+			<th>Description</th>
+			<th>Category</th>
+			<th>Date</th>
+			<th>Venue</th>
+			<th>Price</th>
+			<th>Actions</th>
+		</tr>
+	</thead>
+	<tbody>
+		@foreach (var ev in Model)
+		{
+			<tr>
+				<td>@ev.Id</td>
+				<td>@ev.Name</td>
+				<td>@ev.Description</td>
+				<td>@ev.Category</td>
+				<td>@ev.Date.ToShortDateString()</td>
+				<td>@ev.Venue</td>
+				<td>@ev.Price.ToString("C")</td>
+				<td>
+					<a asp-action="EditEvent" asp-route-id="@ev.Id" class="btn btn-sm btn-warning">Edit</a>
+					<form asp-action="DeleteEvent" asp-route-id="@ev.Id" method="post" style="display:inline;">
+						<button type="submit" class="btn btn-sm btn-danger" onclick="return confirm('Are you sure?');">Delete</button>
+					</form>
+				</td>
+			</tr>
+		}
+	</tbody>
+</table>
+
+<!-- Auto Fade Out Script -->
+@section Scripts {
+	<script>
+		// Hide success message after 3 seconds
+		setTimeout(function () {
+			var successMessage = document.getElementById('successMessage');
+			if (successMessage) {
+				successMessage.style.transition = "opacity 0.5s ease-out";
+				successMessage.style.opacity = 0;
+				setTimeout(() => successMessage.remove(), 500);
+			}
+		}, 3000);
+	</script>
+}

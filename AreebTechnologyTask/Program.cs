@@ -37,20 +37,20 @@ namespace AreebTechnologyTask
                             Encoding.UTF8.GetBytes(builder.Configuration["Jwt:Key"]!))
                     };
 
-                        // READ JWT FROM COOKIE
-                        options.Events = new JwtBearerEvents
+                    // READ JWT FROM COOKIE
+                    options.Events = new JwtBearerEvents
+                    {
+                        OnMessageReceived = context =>
                         {
-                            OnMessageReceived = context =>
+                            var token = context.Request.Cookies["JwtToken"];
+                            if (!string.IsNullOrEmpty(token))
                             {
-                                var token = context.Request.Cookies["JwtToken"];
-                                if (!string.IsNullOrEmpty(token))
-                                {
-                                    context.Token = token;
-                                }
-                                return Task.CompletedTask;
+                                context.Token = token;
                             }
-                        };
-                    });
+                            return Task.CompletedTask;
+                        }
+                    };
+                });
 
 
             // Add authorization services
