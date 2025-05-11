@@ -2,37 +2,116 @@
 
 <h2>Add New Event</h2>
 
-<form asp-action="AddEvent" method="post">
+<form asp-action="AddEvent" method="post" id="addEventForm">
 	<div class="form-group">
 		<label asp-for="Name"></label>
 		<input asp-for="Name" class="form-control" />
+		<span asp-validation-for="Name" class="text-danger"></span>
 	</div>
 	<div class="form-group">
 		<label asp-for="Description"></label>
 		<textarea asp-for="Description" class="form-control"></textarea>
+		<span asp-validation-for="Description" class="text-danger"></span>
 	</div>
 	<div class="form-group">
 		<label asp-for="Category"></label>
 		<input asp-for="Category" class="form-control" />
+		<span asp-validation-for="Category" class="text-danger"></span>
 	</div>
 	<div class="form-group">
 		<label asp-for="Date"></label>
 		<input asp-for="Date" type="date" class="form-control" />
+		<span asp-validation-for="Date" class="text-danger"></span>
 	</div>
 	<div class="form-group">
 		<label asp-for="Venue"></label>
 		<input asp-for="Venue" class="form-control" />
+		<span asp-validation-for="Venue" class="text-danger"></span>
 	</div>
 	<div class="form-group">
 		<label asp-for="Price"></label>
 		<input asp-for="Price" type="number" class="form-control" />
+		<span asp-validation-for="Price" class="text-danger"></span>
 	</div>
 	<div class="form-group">
 		<label asp-for="ImageUrl"></label>
 		<input asp-for="ImageUrl" class="form-control" />
+		<span asp-validation-for="ImageUrl" class="text-danger"></span>
 	</div>
 
 	<button type="submit" class="btn btn-success">Create</button>
 	<!-- Cancel button && redirect to Admin Panel -->
 	<a asp-action="AdminPanel" class="btn btn-danger">Cancel</a>
 </form>
+
+@section Scripts {
+	<script>
+		$(document).ready(function () {
+			$("#addEventForm").validate({
+				rules: {
+					Name: {
+						required: true,
+						minlength: 3
+					},
+					Description: {
+						required: true,
+						minlength: 10
+					},
+					Category: {
+						required: true
+					},
+					Date: {
+						required: true,
+						date: true
+					},
+					Venue: {
+						required: true
+					},
+					Price: {
+						required: true,
+						number: true,
+						min: 0
+					},
+					ImageUrl: {
+						required: true,
+						url: true
+					}
+				},
+				messages: {
+					Name: {
+						required: "Please enter event name",
+						minlength: "Event name must be at least 3 characters long"
+					},
+					Description: {
+						required: "Please enter event description",
+						minlength: "Description must be at least 10 characters long"
+					},
+					Category: {
+						required: "Please enter event category"
+					},
+					Date: {
+						required: "Please select event date",
+						date: "Please enter a valid date"
+					},
+					Venue: {
+						required: "Please enter event venue"
+					},
+					Price: {
+						required: "Please enter event price",
+						number: "Please enter a valid number",
+						min: "Price cannot be negative"
+					},
+					ImageUrl: {
+						required: "Please enter image URL",
+						url: "Please enter a valid URL"
+					}
+				},
+				errorElement: "span",
+				errorClass: "text-danger",
+				errorPlacement: function (error, element) {
+					error.insertAfter(element);
+				}
+			});
+		});
+	</script>
+}
