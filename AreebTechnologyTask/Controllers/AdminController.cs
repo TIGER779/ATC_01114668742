@@ -2,9 +2,11 @@
 using AreebTechnologyTask.Models;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
+using AreebTechnologyTask.Authorization;
 
 namespace AreebTechnologyTask.Controllers
 {
+    [AuthorizeRoles("Admin")]
     public class AdminController : Controller
     {
         private readonly AppDbContext _context;

@@ -1,26 +1,238 @@
 ﻿@model IEnumerable<Booking>
 
 <h2>My Bookings</h2>
-<table class="table">
-    <thead>
-        <tr>
-            <th>Event</th>
-            <th>Date</th>
-            <th>Venue</th>
-            <th>Price</th>
-            <th>Booked On</th>
-        </tr>
-    </thead>
-    <tbody>
-        @foreach (var booking in Model)
-        {
-            <tr>
-                <td>@booking.Event.Name</td>
-                <td>@booking.Event.Date.ToShortDateString()</td>
-                <td>@booking.Event.Venue</td>
-				<td>@booking.Event.Price.ToString("C")</td>
-                <td>@booking.BookingDate.ToShortDateString()</td>
-            </tr>
+
+@if (TempData["Success"] != null)
+{
+    <div class="alert alert-success alert-dismissible fade show" role="alert">
+        @TempData["Success"]
+        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+    </div>
+}
+
+@if (TempData["Error"] != null)
+{
+    <div class="alert alert-danger alert-dismissible fade show" role="alert">
+        @TempData["Error"]
+        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+    </div>
+}
+
+@if (!Model.Any())
+{
+    <div class="alert alert-info">
+        You haven't booked any events yet. <a asp-controller="Home" asp-action="Index">Browse events</a>
+    </div>
+}
+else
+{
+    <div class="table-responsive">
+        <table class="table table-hover">
+            <thead class="table-light">
+                <tr>
+                    <th>Event</th>
+                    <th>Date</th>
+                    <th>Venue</th>
+                    <th>Price</th>
+                    <th>Booked On</th>
+                    <th>Actions</th>
+                </tr>
+            </thead>
+            <tbody>
+                @foreach (var booking in Model)
+                {
+                    <tr>
+                        <td>@booking.Event.Name</td>
+                        <td>@booking.Event.Date.ToShortDateString()</td>
+                        <td>@booking.Event.Venue</td>
+                        <td>@booking.Event.Price.ToString("C")</td>
+                        <td>@booking.BookingDate.AddHours(3).ToString("MM/dd/yyyy HH:mm")</td>
+                        <td>
+                            <div class="btn-group" role="group">
+                                <button type="button" class="btn btn-primary btn-sm me-2" onclick="saveAsTicket(@booking.Id)">
+                                    <i class="fas fa-ticket-alt me-1"></i> Save Ticket
+                                </button>
+                                <form asp-action="CancelBooking" method="post" class="d-inline" 
+                                      onsubmit="return confirm('Are you sure you want to cancel this booking?');">
+                                    @Html.AntiForgeryToken()
+                                    <input type="hidden" name="bookingId" value="@booking.Id" />
+                                    <button type="submit" class="btn btn-danger btn-sm">
+                                        <i class="fas fa-trash-alt me-1"></i> Cancel
+                                    </button>
+                                </form>
+                            </div>
+                        </td>
+                    </tr>
+                }
+            </tbody>
+        </table>
+    </div>
+}
+
+<!-- Ticket Template (Hidden) -->
+<div id="ticketTemplate" style="display: none;">
+    <div class="ticket" style="width: 400px; padding: 20px; border: 2px solid #000; margin: 20px; font-family: Arial, sans-serif; background: linear-gradient(135deg, #ffffff 0%, #f8f9fa 100%);">
+        <div style="text-align: center; border-bottom: 1px solid #000; padding-bottom: 10px; margin-bottom: 10px;">
+            <h2 style="margin: 0; color: #2c3e50;">Event Ticket</h2>
+            <div style="font-size: 12px; color: #7f8c8d;">Ticket ID: <span id="ticketId"></span></div>
+        </div>
+        <div style="display: flex; gap: 20px;">
+            <div style="flex: 1;">
+                <div style="margin-bottom: 10px;">
+                    <strong>Event:</strong> <span id="ticketEventName"></span>
+                </div>
+                <div style="margin-bottom: 10px;">
+                    <strong>Date:</strong> <span id="ticketDate"></span>
+                </div>
+                <div style="margin-bottom: 10px;">
+                    <strong>Venue:</strong> <span id="ticketVenue"></span>
+                </div>
+                <div style="margin-bottom: 10px;">
+                    <strong>Price:</strong> <span id="ticketPrice"></span>
+                </div>
+                <div style="margin-bottom: 10px;">
+                    <strong>Booked On:</strong> <span id="ticketBookedOn"></span>
+                </div>
+            </div>
+            <div style="width: 200px; height: 200px; display: flex; align-items: center; justify-content: center; background: white; border: 1px solid #ddd;">
+                <div id="qrcode" style="width: 180px; height: 180px;"></div>
+            </div>
+        </div>
+        <div style="text-align: center; margin-top: 20px; font-size: 12px; color: #7f8c8d;">
+            <p>Thank you for your booking!</p>
+            <p>Please present this ticket at the venue</p>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
+    <script>
+        // Auto-hide alerts after 5 seconds
+        window.setTimeout(function() {
+            $(".alert").fadeTo(500, 0).slideUp(500, function(){
+                $(this).remove(); 
+            });
+        }, 5000);
+
+        function generateTicketId() {
+            const timestamp = new Date().getTime();
+            const random = Math.floor(Math.random() * 1000);
+            return `TKT-${timestamp}-${random}`;
         }
-    </tbody>
-</table>
+
+        let isGeneratingTicket = false;
+
+        function saveAsTicket(bookingId) {
+            if (isGeneratingTicket) return;
+            isGeneratingTicket = true;
+
+            try {
+                // Find the booking row
+                const row = $(`form[action*="CancelBooking"] input[value="${bookingId}"]`).closest('tr');
+                
+                // Get booking details
+                const eventName = row.find('td').eq(0).text().trim();
+                const date = row.find('td').eq(1).text().trim();
+                const venue = row.find('td').eq(2).text().trim();
+                const price = row.find('td').eq(3).text().trim();
+                const bookedOn = row.find('td').eq(4).text().trim();
+
+                // Generate ticket ID
+                const ticketId = generateTicketId();
+
+                // Create a temporary visible ticket for debugging
+                const ticketTemplate = document.getElementById('ticketTemplate');
+                ticketTemplate.style.display = 'block';
+
+                // Update ticket template
+                document.getElementById('ticketId').textContent = ticketId;
+                document.getElementById('ticketEventName').textContent = eventName;
+                document.getElementById('ticketDate').textContent = date;
+                document.getElementById('ticketVenue').textContent = venue;
+                document.getElementById('ticketPrice').textContent = price;
+                document.getElementById('ticketBookedOn').textContent = bookedOn;
+
+                // Create QR code data
+                const qrData = JSON.stringify({
+                    ticketId: ticketId,
+                    eventName: eventName,
+                    date: date,
+                    venue: venue,
+                    price: price,
+                    bookedOn: bookedOn
+                });
+
+                // Clear previous QR code
+                const qrcodeDiv = document.getElementById('qrcode');
+                qrcodeDiv.innerHTML = '';
+
+                // Generate QR code
+                const qrcode = new QRCode(qrcodeDiv, {
+                    text: qrData,
+                    width: 180,
+                    height: 180,
+                    colorDark: "#000000",
+                    colorLight: "#ffffff",
+                    correctLevel: QRCode.CorrectLevel.H
+                });
+
+                let qrCodeCheckAttempts = 0;
+                const maxAttempts = 20;
+
+                // Function to capture the ticket as image
+                function captureTicket() {
+                    if (qrCodeCheckAttempts >= maxAttempts) {
+                        console.warn('QR code generation timed out');
+                        isGeneratingTicket = false;
+                        return;
+                    }
+
+                    const qrImage = qrcodeDiv.querySelector('img');
+                    if (!qrImage || !qrImage.complete) {
+                        qrCodeCheckAttempts++;
+                        setTimeout(captureTicket, 100);
+                        return;
+                    }
+
+                    html2canvas(ticketTemplate, {
+                        scale: 2,
+                        useCORS: true,
+                        backgroundColor: null,
+                        logging: false,
+                        onclone: function(clonedDoc) {
+                            const clonedQR = clonedDoc.getElementById('qrcode');
+                            if (clonedQR) {
+                                clonedQR.style.display = 'block';
+                            }
+                        }
+                    }).then(canvas => {
+                        const image = canvas.toDataURL('image/jpeg', 1.0);
+                        
+                        // Create download link
+                        const link = document.createElement('a');
+                        link.download = `ticket-${eventName.replace(/[^a-z0-9]/gi, '_').toLowerCase()}.jpg`;
+                        link.href = image;
+                        link.click();
+
+                        // Clean up
+                        ticketTemplate.style.display = 'none';
+                        qrcodeDiv.innerHTML = '';
+                        isGeneratingTicket = false;
+                    }).catch(error => {
+                        console.error('Error generating ticket:', error);
+                        isGeneratingTicket = false;
+                    });
+                }
+
+                // Start the capture process
+                setTimeout(captureTicket, 100);
+
+            } catch (error) {
+                console.error('Error in saveAsTicket:', error);
+                isGeneratingTicket = false;
+            }
+        }
+    </script>
+}

@@ -3,7 +3,16 @@
 @{
     ViewData["Title"] = "Home";
     var bookedEventIds = ViewBag.BookedEventIds as List<int> ?? new List<int>();
-    var jwtToken = ViewBag.JwtToken as string;
+    var token = Context.Request.Cookies["JwtToken"];
+    bool isLoggedIn = !string.IsNullOrEmpty(token);
+    string userRole = null;
+    
+    if (isLoggedIn)
+    {
+        var handler = new System.IdentityModel.Tokens.Jwt.JwtSecurityTokenHandler();
+        var jwtToken = handler.ReadToken(token) as System.IdentityModel.Tokens.Jwt.JwtSecurityToken;
+        userRole = jwtToken?.Claims.FirstOrDefault(c => c.Type == System.Security.Claims.ClaimTypes.Role)?.Value;
+    }
 }
 
 <h2>Upcoming Events</h2>
@@ -20,13 +29,8 @@
 <div class="row row-cols-1 row-cols-md-3 g-4">
     @foreach (var evt in Model)
     {
-		// Check if the user is logged in and set the target URL accordingly
-        var targetUrl = !string.IsNullOrEmpty(jwtToken)
-        ? Url.Action("Details", "Home", new { id = evt.Id })
-        : Url.Action("Login", "Auth", new { returnUrl = Context.Request.Path });
-
         <div class="col">
-            <a href="@targetUrl" style="text-decoration: none; color: inherit;">
+            <a href="@Url.Action("Details", "Home", new { id = evt.Id })" style="text-decoration: none; color: inherit;">
                 <div class="card h-100 shadow-sm">
                     <img src="/Images/@evt.ImageUrl" class="card-img-top" alt="@evt.Name" style="height:200px; object-fit:cover;">
                     <div class="card-body">
@@ -41,7 +45,7 @@
                         {
                             <span class="btn btn-success w-100 disabled">Booked</span>
                         }
-                        else if (!string.IsNullOrEmpty(jwtToken))
+                        else if (isLoggedIn && userRole != "Admin")
                         {
                             <form method="post" action="@Url.Action("BookEvent", "Home")" class="book-form" onclick="event.stopPropagation();">
                                 <input type="hidden" name="eventId" value="@evt.Id" />
@@ -59,8 +63,6 @@
         </div>
     }
 </div>
-
-
 
 @section Scripts {
     <script>

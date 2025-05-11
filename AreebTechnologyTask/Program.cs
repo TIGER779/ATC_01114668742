@@ -2,6 +2,7 @@ using System.Text;
 using AreebTechnologyTask.Data;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.IdentityModel.Tokens;
+using AreebTechnologyTask.Enums;
 
 namespace AreebTechnologyTask
 {
@@ -52,9 +53,15 @@ namespace AreebTechnologyTask
                     };
                 });
 
-
-            // Add authorization services
-            builder.Services.AddAuthorization();
+            // Add authorization services with policies
+            builder.Services.AddAuthorization(options =>
+            {
+                options.AddPolicy("RequireAdminRole", policy =>
+                    policy.RequireRole(UserRole.Admin.ToString()));
+                
+                options.AddPolicy("RequireUserRole", policy =>
+                    policy.RequireRole(UserRole.User.ToString()));
+            });
 
             var app = builder.Build();
 
