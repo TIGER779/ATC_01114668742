@@ -68,9 +68,15 @@ namespace AreebTechnologyTask.Controllers
         {
             var user = await _context.Users.FirstOrDefaultAsync(u => u.Email == request.Email);
 
-            if (user == null || !BCrypt.Net.BCrypt.Verify(request.Password, user.HashedPassword))
+            if (user == null)
             {
-                ModelState.AddModelError("", "Invalid email or password");
+                TempData["LoginError"] = "Email not found. Please check your email or register if you don't have an account.";
+                return View(request);
+            }
+
+            if (!BCrypt.Net.BCrypt.Verify(request.Password, user.HashedPassword))
+            {
+                TempData["LoginError"] = "Incorrect password. Please try again.";
                 return View(request);
             }
 
@@ -175,9 +181,22 @@ namespace AreebTechnologyTask.Controllers
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Register(RegisterDto request)
         {
+            // Validate phone number format
+            if (!string.IsNullOrEmpty(request.Phone))
+            {
+                if (!System.Text.RegularExpressions.Regex.IsMatch(request.Phone, @"^01[0-9]{9}$"))
+                {
+                    ModelState.AddModelError("Phone", "Phone number must start with '01' and be exactly 11 digits");
+                    return View(request);
+                }
+            }
+
             // Check if the user already exists
             if (_context.Users.Any(u => u.Email == request.Email && u.Name == request.Name))
-                return BadRequest("User already exists.");
+            {
+                ModelState.AddModelError("", "User already exists.");
+                return View(request);
+            }
 
             // Hash the password
             string passwordHash = BCrypt.Net.BCrypt.HashPassword(request.Password);

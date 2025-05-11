@@ -1,9 +1,8 @@
+using System.IdentityModel.Tokens.Jwt;
+using System.Security.Claims;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Filters;
-using System.IdentityModel.Tokens.Jwt;
-using System.Security.Claims;
-using AreebTechnologyTask.Enums;
 
 namespace AreebTechnologyTask.Authorization
 {
@@ -20,10 +19,10 @@ namespace AreebTechnologyTask.Authorization
         {
             // Get JWT token from cookie
             var token = context.HttpContext.Request.Cookies["JwtToken"];
-            
+
             if (string.IsNullOrEmpty(token))
             {
-                context.Result = new RedirectToActionResult("Login", "Auth", 
+                context.Result = new RedirectToActionResult("Login", "Auth",
                     new { returnUrl = context.HttpContext.Request.Path });
                 return;
             }
@@ -36,7 +35,7 @@ namespace AreebTechnologyTask.Authorization
 
                 if (jwtToken == null)
                 {
-                    context.Result = new RedirectToActionResult("Login", "Auth", 
+                    context.Result = new RedirectToActionResult("Login", "Auth",
                         new { returnUrl = context.HttpContext.Request.Path });
                     return;
                 }
@@ -46,7 +45,7 @@ namespace AreebTechnologyTask.Authorization
 
                 if (string.IsNullOrEmpty(userRole))
                 {
-                    context.Result = new RedirectToActionResult("Login", "Auth", 
+                    context.Result = new RedirectToActionResult("Login", "Auth",
                         new { returnUrl = context.HttpContext.Request.Path });
                     return;
                 }
@@ -70,10 +69,10 @@ namespace AreebTechnologyTask.Authorization
             catch
             {
                 // If token is invalid or expired
-                context.Result = new RedirectToActionResult("Login", "Auth", 
+                context.Result = new RedirectToActionResult("Login", "Auth",
                     new { returnUrl = context.HttpContext.Request.Path });
                 return;
             }
         }
     }
-} 
+}
