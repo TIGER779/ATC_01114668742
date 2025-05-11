@@ -8,9 +8,11 @@ using AreebTechnologyTask.Models;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
+using Microsoft.AspNetCore.Authorization;
 
 namespace AreebTechnologyTask.Controllers
 {
+    [Authorize]
     public class AuthController : Controller
     {
         private readonly AppDbContext _context;
@@ -25,13 +27,41 @@ namespace AreebTechnologyTask.Controllers
         }
 
         // GET: /Auth/Login
+        [AllowAnonymous]
         [HttpGet]
         public IActionResult Login()
         {
-            return View(); // Views/Auth/Login.cshtml
+            // Check if user is already logged in
+            var token = Request.Cookies["JwtToken"];
+            if (!string.IsNullOrEmpty(token))
+            {
+                try
+                {
+                    var handler = new JwtSecurityTokenHandler();
+                    var jwtToken = handler.ReadToken(token) as JwtSecurityToken;
+                    var userRole = jwtToken?.Claims.FirstOrDefault(c => c.Type == ClaimTypes.Role)?.Value;
+
+                    // Redirect based on role
+                    if (userRole == UserRole.Admin.ToString())
+                    {
+                        return RedirectToAction("AdminPanel", "Admin");
+                    }
+                    else
+                    {
+                        return RedirectToAction("Index", "Home");
+                    }
+                }
+                catch
+                {
+                    // If token is invalid, clear it and show login page
+                    Response.Cookies.Delete("JwtToken");
+                }
+            }
+            return View();
         }
 
         // POST: /Auth/Login
+        [AllowAnonymous]
         [HttpPost]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Login(LoginDto request, string? returnUrl)
@@ -54,10 +84,17 @@ namespace AreebTechnologyTask.Controllers
                 Expires = expiresAt
             });
 
-            if (!string.IsNullOrEmpty(returnUrl) && Url.IsLocalUrl(returnUrl))
-                return Redirect(returnUrl);
-
-            return RedirectToAction("Index", "Home");
+            // Redirect based on user role
+            if (user.Role == UserRole.Admin)
+            {
+                return RedirectToAction("AdminPanel", "Admin");
+            }
+            else
+            {
+                if (!string.IsNullOrEmpty(returnUrl) && Url.IsLocalUrl(returnUrl))
+                    return Redirect(returnUrl);
+                return RedirectToAction("Index", "Home");
+            }
         }
 
 
@@ -69,7 +106,7 @@ namespace AreebTechnologyTask.Controllers
 
             HttpContext.Session.Clear();
 
-            await Task.CompletedTask; // Simulate async operation
+            await Task.CompletedTask;
 
             return RedirectToAction("Index", "Home");
         }
@@ -78,9 +115,10 @@ namespace AreebTechnologyTask.Controllers
         {
             var claims = new[]
             {
-        new Claim(ClaimTypes.NameIdentifier, user.Id.ToString()),
-        new Claim(ClaimTypes.Email, user.Email)
-    };
+                new Claim(ClaimTypes.NameIdentifier, user.Id.ToString()),
+                new Claim(ClaimTypes.Email, user.Email),
+                new Claim(ClaimTypes.Role, user.Role.ToString())
+            };
 
             var key = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(_configuration["Jwt:Key"]!));
             var creds = new SigningCredentials(key, SecurityAlgorithms.HmacSha256);
@@ -98,13 +136,41 @@ namespace AreebTechnologyTask.Controllers
 
 
 
+        [AllowAnonymous]
         [HttpGet]
         public IActionResult Register()
         {
-            return View(); //Views/Auth/Register.cshtml
+            // Check if user is already logged in
+            var token = Request.Cookies["JwtToken"];
+            if (!string.IsNullOrEmpty(token))
+            {
+                try
+                {
+                    var handler = new JwtSecurityTokenHandler();
+                    var jwtToken = handler.ReadToken(token) as JwtSecurityToken;
+                    var userRole = jwtToken?.Claims.FirstOrDefault(c => c.Type == ClaimTypes.Role)?.Value;
+
+                    // Redirect based on role
+                    if (userRole == UserRole.Admin.ToString())
+                    {
+                        return RedirectToAction("AdminPanel", "Admin");
+                    }
+                    else
+                    {
+                        return RedirectToAction("Index", "Home");
+                    }
+                }
+                catch
+                {
+                    // If token is invalid, clear it and show register page
+                    Response.Cookies.Delete("JwtToken");
+                }
+            }
+            return View();
         }
 
         // POST: /Auth/Register
+        [AllowAnonymous]
         [HttpPost]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Register(RegisterDto request)

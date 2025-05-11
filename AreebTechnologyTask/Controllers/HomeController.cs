@@ -2,6 +2,7 @@ using System.Diagnostics;
 using System.IdentityModel.Tokens.Jwt;
 using System.Security.Claims;
 using AreebTechnologyTask.Data;
+using AreebTechnologyTask.Enums;
 using AreebTechnologyTask.Models;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
@@ -63,6 +64,7 @@ namespace AreebTechnologyTask.Controllers
 
 
         // event booking
+        [Authorize]
         [HttpPost]
         public async Task<IActionResult> BookEvent(int eventId)
         {
@@ -75,6 +77,20 @@ namespace AreebTechnologyTask.Controllers
                     return Json(new { success = false, message = "Unauthorized" });
 
                 return RedirectToAction("Login", "Auth", new { returnUrl = Url.Action("Index", "Home") });
+            }
+
+            // Check if user is admin
+            var handler = new JwtSecurityTokenHandler();
+            var jwtToken = handler.ReadToken(token) as JwtSecurityToken;
+            var userRole = jwtToken?.Claims.FirstOrDefault(c => c.Type == ClaimTypes.Role)?.Value;
+
+            if (userRole == UserRole.Admin.ToString())
+            {
+                if (isAjax)
+                    return Json(new { success = false, message = "Admin cannot book events." });
+
+                TempData["Error"] = "Admin cannot book events.";
+                return RedirectToAction("Index", "Home");
             }
 
             var userId = GetUserIdFromToken(token);
@@ -137,11 +153,13 @@ namespace AreebTechnologyTask.Controllers
             return View(eventItem); //Views/Event/Details.cshtml
         }
 
+        [AllowAnonymous]
         public IActionResult Privacy()
         {
             return View();
         }
 
+        [AllowAnonymous]
         [ResponseCache(Duration = 0, Location = ResponseCacheLocation.None, NoStore = true)]
         public IActionResult Error()
         {
