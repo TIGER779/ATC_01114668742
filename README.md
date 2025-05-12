@@ -11,6 +11,20 @@ The Event Booking System is a web application designed to facilitate the booking
 -   Booking and reservation management
 -   Admin panel for event management
 
+## DEMO Images
+
+### User Side
+
+![Home Page](Images/Home%20Page.png)
+![Home page after Login](Images/Home%20Page%20Logged%20in.png)
+![My Bookings Page](Images/My%20Bookings.png)
+![Congratulations Page](Images/Congratulation%20Page.png)
+![Sample Ticket](Images/ticket-tech_conference_2024.jpg)
+
+### Admin Side
+
+![Admin panel](Images/Admin%20Panel.png)
+
 ## Frontend Information
 
 -   **Technologies Used**: Razor Pages (CSHTML), CSS, JavaScript
@@ -58,8 +72,8 @@ The Event Booking System is a web application designed to facilitate the booking
 
 4.  **Create the Database**:
 
-
     -   Create the database in SQL Server with the following command:
+
     ```sql
     CREATE DATABASE Event_Booking_System
     ```
