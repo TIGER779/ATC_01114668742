@@ -17,8 +17,8 @@ The Event Booking System is a web application designed to facilitate the booking
 
 ![Home Page](Images/Home%20Page.png)
 ![Home page after Login](Images/Home%20Page%20Logged%20in.png)
-![My Bookings Page](Images/My%20Bookings.png)
 ![Congratulations Page](Images/Congratulation%20Page.png)
+![My Bookings Page](Images/My%20Bookings.png)
 ![Sample Ticket](Images/ticket-tech_conference_2024.jpg)
 
 ### Admin Side
