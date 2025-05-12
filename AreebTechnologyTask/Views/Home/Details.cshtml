@@ -1,5 +1,11 @@
 ﻿@model Event
-
+@{
+	ViewData["Title"] = "Details";
+	var bookedEventIds = ViewBag.BookedEventIds as List<int> ?? new List<int>();
+	var token = Context.Request.Cookies["JwtToken"];
+	bool isLoggedIn = !string.IsNullOrEmpty(token);
+	string userRole = null;
+}
 <!-- Event Details Section Begin -->
 <h2 class="mb-4 text-primary">Event Details</h2>
 <section class="spad my-5">
@@ -38,10 +44,18 @@
 						<!-- Action Buttons -->
 						<div class="d-flex justify-content-between mt-4">
 							<a asp-action="Index" asp-controller="Home" class="btn btn-outline-primary w-45">⬅️ Back to Events</a>
-							<form asp-action="BookEvent" asp-controller="Home" method="post">
-								<input type="hidden" name="eventId" value="@Model.Id" />
-								<button type="submit" class="btn btn-success w-45">Book Now</button>
-							</form>
+							@if (isLoggedIn)
+							{
+								<form asp-action="BookEvent" asp-controller="Home" method="post">
+									<input type="hidden" name="eventId" value="@Model.Id" />
+									<button type="submit" class="btn btn-success w-45">Book Now</button>
+								</form>
+							}
+							else
+							{
+								<a asp-controller="Auth" asp-action="Login" asp-route-returnUrl="@Context.Request.Path"
+								   class="btn btn-outline-secondary w-45">Login to Book</a>
+							}
 						</div>
 
 					</div>

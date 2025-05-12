@@ -44,31 +44,45 @@ The Event Booking System is a web application designed to facilitate the booking
 
 ## Installation Steps
 
-1. **Clone the Repository**:
+1.  **Clone the Repository**:
     ```bash
     git clone <repository-url>
     ```
-2. **Change Server Name in appsettings**:
-    - Open `appsettings.json` and update the `Server` value in the `constr` key to match your SQL Server instance.
-3. **Download NuGet Packages**:
-    - Restore the necessary NuGet packages using the following command:
+2.  **Install dotnet-ef Tool**:
+    ```bash
+    dotnet tool install --global dotnet-ef
+    ```
+3.  **Change Server Name in appsettings**:
+
+    -   Open `appsettings.json` and update the `Server` value in the `constr` key to match your SQL Server instance.
+
+4.  **Create the Database**:
+
+
+    -   Create the database in SQL Server with the following command:
+    ```sql
+    CREATE DATABASE Event_Booking_System
+    ```
+
+5.  **Download NuGet Packages**:
+    -   Restore the necessary NuGet packages using the following command:
     ```bash
     dotnet restore
     ```
-4. **Migration Step**:
-    - Apply migrations to set up the database schema:
+6.  **Migration Step**:
+    -   Apply migrations to set up the database schema:
     ```bash
     dotnet ef database update
     ```
-5. **Insert Data into Database**:
-    - Use the provided `database.sql` file to insert initial data into the database.
-6. **Build the Project**:
-    - Compile the project using:
+7.  **Insert Data into Database**:
+    -   Use the provided `database.sql` file to insert initial data into the database.
+8.  **Build the Project**:
+    -   Compile the project using:
     ```bash
     dotnet build
     ```
-7. **Run the Project**:
-    - Start the application with:
+9.  **Run the Project**:
+    -   Start the application with:
     ```bash
     dotnet run
     ```
