@@ -12,8 +12,8 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace AreebTechnologyTask.Migrations
 {
     [DbContext(typeof(AppDbContext))]
-    [Migration("20250510122525_Create Migration")]
-    partial class CreateMigration
+    [Migration("20250512113840_EventBooking")]
+    partial class EventBooking
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -69,8 +69,7 @@ namespace AreebTechnologyTask.Migrations
 
                     b.Property<string>("Description")
                         .IsRequired()
-                        .HasMaxLength(255)
-                        .HasColumnType("nvarchar(255)");
+                        .HasColumnType("nvarchar(max)");
 
                     b.Property<string>("ImageUrl")
                         .IsRequired()
