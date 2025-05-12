@@ -1,6 +1,86 @@
 ﻿@{
     ViewData["Title"] = "Privacy Policy";
 }
-<h1>@ViewData["Title"]</h1>
 
-<p>Use this page to detail your site's privacy policy.</p>
+<div class="container py-5">
+    <h1 class="mb-4">@ViewData["Title"]</h1>
+
+    <div class="card shadow-sm">
+        <div class="card-body">
+            <h2 class="h4 mb-3">1. Information We Collect</h2>
+            <p>When you use our Event Booking System, we collect:</p>
+            <ul>
+                <li><strong>Personal Information:</strong> Your name, email address, phone number, and address for registration</li>
+                <li><strong>Event Bookings:</strong> Details of events you book, including event name, date, venue, and booking history</li>
+                <li><strong>Account Details:</strong> Your login credentials and account preferences</li>
+            </ul>
+
+            <h2 class="h4 mb-3 mt-4">2. How We Use Your Information</h2>
+            <p>Your information helps us provide better service:</p>
+            <ul>
+                <li>Manage your event bookings and send confirmations</li>
+                <li>Maintain your booking records</li>
+                <li>Send you updates about your booked events</li>
+                <li>Notify you about new events that match your interests</li>
+                <li>Improve our event booking platform and user experience</li>
+            </ul>
+
+            <h2 class="h4 mb-3 mt-4">3. Data Security</h2>
+            <p>We prioritize the security of your information:</p>
+            <ul>
+                <li>All data is encrypted using industry-standard protocols</li>
+                <li>Passwords are securely hashed using BCrypt</li>
+                <li>JWT (JSON Web Tokens) for secure authentication</li>
+                <li>Regular security updates and monitoring</li>
+            </ul>
+
+            <h2 class="h4 mb-3 mt-4">4. Your Rights</h2>
+            <p>As a user of our Event Booking System, you can:</p>
+            <ul>
+                <li>View and manage your event bookings</li>
+                <li>Update your personal information</li>
+                <li>Cancel or modify your bookings</li>
+                <li>Request a copy of your booking history</li>
+                <li>Delete your account and associated data</li>
+            </ul>
+
+            <h2 class="h4 mb-3 mt-4">5. Cookies and Session Management</h2>
+            <p>We use cookies and JWT tokens to:</p>
+            <ul>
+                <li>Keep you logged in during your session</li>
+                <li>Remember your preferences and booking history</li>
+                <li>Ensure secure access to your account</li>
+                <li>Improve your browsing experience</li>
+            </ul>
+
+            <h2 class="h4 mb-3 mt-4">6. Event Information and Communications</h2>
+            <p>We may send you:</p>
+            <ul>
+                <li>Booking confirmations and updates</li>
+                <li>Event reminders and changes</li>
+                <li>Information about similar events</li>
+                <li>Important system updates</li>
+            </ul>
+
+            <h2 class="h4 mb-3 mt-4">7. Data Retention</h2>
+            <p>We keep your information:</p>
+            <ul>
+                <li>As long as your account is active</li>
+                <li>For the duration of your booked events</li>
+                <li>As required by event booking regulations</li>
+            </ul>
+
+            <h2 class="h4 mb-3 mt-4">8. Contact Us</h2>
+            <p>For privacy-related inquiries, please contact:</p>
+            <ul>
+                <li>Email: support@areebtechnology.com</li>
+                <li>Phone: +20 111 477 8562</li>
+                <li>Address: Maadi, Cairo, Egypt</li>
+            </ul>
+
+            <div class="mt-4">
+                <p class="text-muted"><small>Last updated: @DateTime.Now.ToString("MMMM dd, yyyy")</small></p>
+            </div>
+        </div>
+    </div>
+</div>

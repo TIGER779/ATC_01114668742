@@ -56,7 +56,7 @@ namespace AreebTechnologyTask.Data
             {
                 entity.HasKey(e => e.Id);
                 entity.Property(e => e.Name).HasMaxLength(100).IsRequired();
-                entity.Property(e => e.Description).HasMaxLength(255).IsRequired();
+                entity.Property(e => e.Description).HasColumnType("nvarchar(max)").IsRequired();
                 entity.Property(e => e.Category).HasMaxLength(50).IsRequired();
                 entity.Property(e => e.Venue).HasMaxLength(100).IsRequired();
                 entity.Property(e => e.ImageUrl).HasMaxLength(255).IsRequired();
